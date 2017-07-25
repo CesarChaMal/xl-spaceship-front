@@ -1,0 +1,5 @@
+<table class="table table-bordered">
+  <tr *ngFor="let row of board">
+    <td *ngFor="let ch of row.split('')" class="text-center cell" [ngClass]="{ship: ch == '*'}">{{ch}}</td>
+  </tr>
+</table>

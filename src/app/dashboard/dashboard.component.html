@@ -1,0 +1,45 @@
+<div class="row">
+  <form #newGameForm="ngForm" (ngSubmit)="onNewGame(newGameForm)" class="col-md-4">
+    <div class="form-group">
+      <label for="user_id" class="control-label">User Id</label>
+      <input id="user_id" name="user_id" #userId="ngModel" ngModel class="form-control">
+    </div>
+    <div class="form-group">
+      <label for="full_name" class="control-label">Full Name</label>
+      <input id="full_name" name="full_name" #fullName="ngModel" ngModel class="form-control">
+    </div>
+    <button class="btn btn-primary">Submit</button>
+  </form>
+  <div class="col-md-4">
+    <div class="form-group">
+      <label for="opponentName">Opponent Full Name</label>
+      <span id="opponentName" class="form-control">{{newGame?.full_name}}</span>
+    </div>
+    <div class="form-group">
+      <label for="opponentId">Opponent Id</label>
+      <span id="opponentId" class="form-control">{{newGame?.user_id}}</span>
+    </div>
+    <div class="form-group">
+      <label for="rules">Rules</label>
+      <span id="rules" class="form-control">{{newGame?.rules}}</span>
+    </div>
+    <div class="form-group">
+      <label for="starting">Starting</label>
+      <span id="starting" class="form-control">{{newGame?.starting}}</span>
+    </div>
+    <div class="form-group">
+      <label for="game_id">Game Id</label>
+      <span id="game_id" class="form-control">{{newGame?.game_id}}</span>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-6">
+    <label for="selfBoard">{{game?.self.user_id}}</label>
+    <app-board id="selfBoard" [board]="game?.self.board"></app-board>
+  </div>
+  <div class="col-md-6">
+    <label for="opponentBoard">{{game?.opponent.user_id}}</label>
+    <app-board id="opponentBoard" [board]="game?.opponent.board"></app-board>
+  </div>
+</div>
