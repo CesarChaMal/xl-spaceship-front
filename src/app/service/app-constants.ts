@@ -7,7 +7,7 @@ export class AppConstants {
   static USER_RESOURCE = '/xl-spaceship/user';
   static PROTOCOL_RESOURCE = '/xl-spaceship/protocol';
 
-  static GAME_FIRE_RESOURCE = '/game/{gameId}/fire';
+  static GAME_FIRE_RESOURCE = '/fire';
   static GAME_AUTOPILOT_RESOURCE = '/game/{gameId}/auto';
   static GAME_NEW_RESOURCE = '/game/new';
   static PROTOCOL_CATCH_SALVO_RESOURCE = '/game/{gameId}';
@@ -16,4 +16,5 @@ export class AppConstants {
 
   static NEW_GAME_LS = 'newgame';
   static GAME_LS = 'game';
+  static SALVO_RESPONSE_LS = 'salvoresponse';
 }

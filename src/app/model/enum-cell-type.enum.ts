@@ -1,6 +1,6 @@
 export enum EnumCellType {
   SHIP = "*",
-  MISSED_SHOT = "-",
-  FIRED = "X",
+  MISS = "-",
+  HIT = "X",
   UNKNOWN = "."
 }
