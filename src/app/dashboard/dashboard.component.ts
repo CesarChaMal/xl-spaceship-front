@@ -12,6 +12,7 @@ import {Game} from "app/model/game";
 })
 export class DashboardComponent implements OnInit {
 
+  @LocalStorage(AppConstants.GAME_OVER_LS) gameOver: boolean;
   @LocalStorage(AppConstants.NEW_GAME_LS) newGame: {
     full_name: string;
     user_id: string;
@@ -20,26 +21,27 @@ export class DashboardComponent implements OnInit {
     game_id: string
   };
   @LocalStorage(AppConstants.GAME_LS) game: Game;
-  @LocalStorage(AppConstants.SALVO_RESPONSE_LS) salvoResponse: {
-    salvo: { [key: string]: string },
-    game: {
-      player_turn: string
-    }
-  };
+  @LocalStorage(AppConstants.PLAYER_TURN_LS) player_turn;
+  @LocalStorage(AppConstants.OPPONENT_SHIP_COUNT_LS) opponentShipCount;
+  @LocalStorage(AppConstants.SELF_SHIP_COUNT_LS) selfShipCount;
 
   constructor(private gameService: GameService) {
   }
 
   ngOnInit() {
+    console.log(this.gameOver);
     this.updateGame();
   }
 
   onNewGame(form: NgForm) {
-    console.log(form.form.value);
-    this.gameService.newGame(form.form.value).subscribe((game) => {
-      this.newGame = game;
-      this.updateGame();
-    });
+    this.gameService.newGame(form.form.value)
+      .subscribe((game) => {
+        this.opponentShipCount = this.selfShipCount = AppConstants.SHIP_COUNT;
+        this.newGame = game;
+        this.player_turn = game.starting;
+        this.gameOver = false;
+        this.updateGame();
+      });
   }
 
   updateGame() {
@@ -48,6 +50,8 @@ export class DashboardComponent implements OnInit {
     }
     this.gameService.getGameStatus(this.newGame.game_id)
       .subscribe((game) => {
+        game.opponent.shipCount = this.opponentShipCount;
+        game.self.shipCount = this.selfShipCount;
         this.game = game;
       });
   }
@@ -55,16 +59,43 @@ export class DashboardComponent implements OnInit {
   onReSalvo() {
     this.gameService.reSalvo(this.newGame.game_id)
       .subscribe((res) => {
-        this.salvoResponse = res;
-        this.game.opponent.markSalvo(res.salvo);
+        if (res.game.player_turn) {
+          this.player_turn = res.game.player_turn;
+        } else {
+          this.player_turn = res.game.won;
+          this.gameOver = true;
+        }
+        this.opponentShipCount = this.game.opponent.markSalvo(res.salvo);
+      });
+  }
+
+  onRedUpon() {
+    let salvo = [];
+    for (let i = 0; i < this.opponentShipCount; i++) {
+      let x = Math.random().toString(16).substr(2, 1);
+      let y = Math.random().toString(16).substr(2, 1);
+      salvo.push(`${y}x${x}`);
+    }
+    this.gameService.redUpon(this.newGame.game_id, salvo)
+      .subscribe((res) => {
+        if (res.game.player_turn) {
+          this.player_turn = res.game.player_turn;
+        } else {
+          this.player_turn = res.game.won;
+          this.gameOver = true;
+        }
+        this.selfShipCount = this.game.self.markSalvo(res.salvo);
       });
   }
 
   playerTurn(user_id) {
-    if (!this.salvoResponse) {
+    if (!this.player_turn) {
       return false;
     }
-    return this.salvoResponse.game.player_turn === user_id;
+    return this.player_turn === user_id;
   }
 
+  getRestShots() {
+    return this.gameService.getRestShots(this.game.self);
+  }
 }

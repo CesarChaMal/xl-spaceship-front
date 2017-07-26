@@ -3,7 +3,7 @@ import {Http} from "@angular/http";
 import {AppConstants} from "./app-constants";
 import 'rxjs/Rx';
 import {Game} from "../model/game";
-import {Board} from "../model/board";
+import {Player} from "../model/board";
 import {Coords} from "../model/coords";
 
 @Injectable()
@@ -25,9 +25,11 @@ export class GameService {
       .map((res) => {
         let body = res.json();
         let self = body.self;
+        if (self == null)
+          throw {message: 'Game is not started'};
         let opponent = body.opponent;
-        let selfBoard = new Board(self.user_id, self.board);
-        let opponentBoard = new Board(opponent.user_id, opponent.board);
+        let selfBoard = new Player(self.user_id, self.board, AppConstants.SHIP_COUNT);
+        let opponentBoard = new Player(opponent.user_id, opponent.board, AppConstants.SHIP_COUNT);
         return new Game(body.game.player_turn, selfBoard, opponentBoard);
       })
   }
@@ -44,8 +46,24 @@ export class GameService {
       + AppConstants.GAME_FIRE_RESOURCE,
       {salvo: this.salvo})
       .map((res) => {
+        this.salvo = [];
         return res.json();
       })
   }
 
+  getRestShots(player: Player) {
+    return player.shipCount - this.salvo.length;
+  }
+
+  redUpon(gameId: string, salvo) {
+    return this.http
+      .put(AppConstants.API_HOST
+      +AppConstants.PROTOCOL_RESOURCE
+      + AppConstants.PROTOCOL_CATCH_SALVO_RESOURCE
+      + gameId,
+        {salvo: salvo})
+      .map((res) => {
+        return res.json();
+      })
+  }
 }

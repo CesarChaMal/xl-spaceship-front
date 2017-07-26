@@ -3,14 +3,15 @@ import {AppConstants} from "../service/app-constants";
 import {Coords} from "./coords";
 import {EnumCellType} from "./enum-cell-type.enum";
 
-export class Board {
+export class Player {
   user_id: string;
   board: Cell[][];
-  shipCount = 5;
+  shipCount:number;
 
-  constructor(user_id: string, board: [string]) {
+  constructor(user_id: string, board: [string], shipCount: number) {
     this.user_id = user_id;
     this.board = [];
+    this.shipCount = shipCount;
     for (let i = 0; i < board.length; i++) {
       let chars = board[i].split('');
       let row = [];
@@ -54,11 +55,13 @@ export class Board {
               cell.type = EnumCellType.MISS;
               break;
             case 'kill':
+              cell.type = EnumCellType.HIT;
               this.shipCount--;
               break;
           }
         }
       })
     })
+    return this.shipCount;
   }
 }

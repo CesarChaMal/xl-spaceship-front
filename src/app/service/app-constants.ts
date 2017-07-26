@@ -10,11 +10,16 @@ export class AppConstants {
   static GAME_FIRE_RESOURCE = '/fire';
   static GAME_AUTOPILOT_RESOURCE = '/game/{gameId}/auto';
   static GAME_NEW_RESOURCE = '/game/new';
-  static PROTOCOL_CATCH_SALVO_RESOURCE = '/game/{gameId}';
+  static PROTOCOL_CATCH_SALVO_RESOURCE = '/game/';
   static PROTOCOL_GAME_NEW_RESOURCE = '/game/new';
   static GAME_ID_RESOURCE = '/game/';
 
   static NEW_GAME_LS = 'newgame';
   static GAME_LS = 'game';
   static SALVO_RESPONSE_LS = 'salvoresponse';
+  static OPPONENT_SHIP_COUNT_LS = 'opponentshipcount';
+  static SELF_SHIP_COUNT_LS = 'selfshipcount';
+  static SHIP_COUNT = 5;
+  static PLAYER_TURN_LS = 'playerturn';
+  static GAME_OVER_LS = 'gameover';
 }

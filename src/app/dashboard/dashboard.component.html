@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row dashboard">
   <form #newGameForm="ngForm" (ngSubmit)="onNewGame(newGameForm)" class="col-md-4">
     <div class="form-group">
       <label for="user_id" class="control-label">User Id</label>
@@ -33,15 +33,21 @@
     </div>
   </div>
 </div>
-<div class="row">
+<div class="row" [hidden]="gameOver">
   <div class="col-md-6">
     <label for="selfBoard" [ngClass]="{'player-turn': playerTurn(game?.self.user_id)}">{{game?.self.user_id}}</label>
-    <button class="btn btn-danger" (click)="onReSalvo()">Salvo</button>
+    <button class="btn btn-danger" (click)="onReSalvo()" [disabled]="getRestShots() > 0 || !playerTurn(game?.self.user_id)">Salvo</button>
+    <span>Ship count: {{game?.self.shipCount}}</span>
+    <span>Rest shots: {{getRestShots()}}</span>
     <app-board id="selfBoard" [board]="game?.self"></app-board>
   </div>
   <div class="col-md-6">
     <label for="opponentBoard" [ngClass]="{'player-turn': playerTurn(game?.opponent.user_id)}">{{game?.opponent.user_id}}</label>
-    <button class="btn btn-danger">Red upon</button>
-    <app-board id="opponentBoard" [board]="game?.opponent"></app-board>
+    <button class="btn btn-danger" (click)="onRedUpon()" [disabled]="!playerTurn(game?.opponent.user_id)">Red upon</button>
+    <span>Ship count: {{game?.opponent.shipCount}}</span>
+    <app-board id="opponentBoard" [board]="game?.opponent" [disabled]="getRestShots() <= 0 || !playerTurn(game?.self.user_id)"></app-board>
   </div>
+</div>
+<div [hidden]="!gameOver">
+  Winner is {{player_turn}}
 </div>
