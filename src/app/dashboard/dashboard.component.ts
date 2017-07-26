@@ -4,6 +4,7 @@ import {NgForm} from "@angular/forms";
 import {LocalStorage} from "ngx-webstorage";
 import {AppConstants} from "../service/app-constants";
 import {Game} from "app/model/game";
+import {Player} from "../model/board";
 
 @Component({
   selector: 'app-dashboard',
@@ -29,7 +30,6 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(this.gameOver);
     this.updateGame();
   }
 
@@ -59,14 +59,18 @@ export class DashboardComponent implements OnInit {
   onReSalvo() {
     this.gameService.reSalvo(this.newGame.game_id)
       .subscribe((res) => {
-        if (res.game.player_turn) {
-          this.player_turn = res.game.player_turn;
-        } else {
-          this.player_turn = res.game.won;
-          this.gameOver = true;
-        }
-        this.opponentShipCount = this.game.opponent.markSalvo(res.salvo);
+        this.salvoTo(res, this.game.opponent);
       });
+  }
+
+  private salvoTo(res, player: Player) {
+    if (res.game.player_turn) {
+      this.player_turn = res.game.player_turn;
+    } else {
+      this.player_turn = res.game.won;
+      this.gameOver = true;
+    }
+    this.opponentShipCount = player.markSalvo(res.salvo);
   }
 
   onRedUpon() {
@@ -78,13 +82,7 @@ export class DashboardComponent implements OnInit {
     }
     this.gameService.redUpon(this.newGame.game_id, salvo)
       .subscribe((res) => {
-        if (res.game.player_turn) {
-          this.player_turn = res.game.player_turn;
-        } else {
-          this.player_turn = res.game.won;
-          this.gameOver = true;
-        }
-        this.selfShipCount = this.game.self.markSalvo(res.salvo);
+        this.salvoTo(res, this.game.self);
       });
   }
 
@@ -97,5 +95,12 @@ export class DashboardComponent implements OnInit {
 
   getRestShots() {
     return this.gameService.getRestShots(this.game.self);
+  }
+
+  onAutopilot() {
+    this.gameService.autopilot(this.newGame.game_id)
+      .subscribe((res) => {
+        this.salvoTo(res, this.game.opponent);
+      })
   }
 }

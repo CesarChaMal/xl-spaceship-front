@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Http} from "@angular/http";
 import {AppConstants} from "./app-constants";
 import 'rxjs/Rx';
@@ -11,9 +11,10 @@ export class GameService {
 
   salvo = [];
 
-  constructor(private http: Http) { }
+  constructor(private http: Http) {
+  }
 
-  newGame(request: {user_id: string; full_name: string; rules?: string;}) {
+  newGame(request: { user_id: string; full_name: string; rules?: string; }) {
     return this.http.post(AppConstants.API_HOST + AppConstants.PROTOCOL_RESOURCE + AppConstants.PROTOCOL_GAME_NEW_RESOURCE, request)
       .map((res) => {
         return res.json();
@@ -35,7 +36,9 @@ export class GameService {
   }
 
   prepSalvo(coords: Coords) {
-    this.salvo.push(coords.toStr());
+    if (this.salvo.indexOf(coords.toStr()) == -1) {
+      this.salvo.push(coords.toStr());
+    }
   }
 
   reSalvo(gameId) {
@@ -58,12 +61,24 @@ export class GameService {
   redUpon(gameId: string, salvo) {
     return this.http
       .put(AppConstants.API_HOST
-      +AppConstants.PROTOCOL_RESOURCE
-      + AppConstants.PROTOCOL_CATCH_SALVO_RESOURCE
-      + gameId,
+        + AppConstants.PROTOCOL_RESOURCE
+        + AppConstants.PROTOCOL_CATCH_SALVO_RESOURCE
+        + gameId,
         {salvo: salvo})
       .map((res) => {
         return res.json();
       })
+  }
+
+  autopilot(gameId: string) {
+    return this.http
+      .post(AppConstants.API_HOST
+        + AppConstants.USER_RESOURCE
+        + AppConstants.GAME_AUTOPILOT_RESOURCE
+        + gameId
+        + '/auto', {})
+      .map((res) => {
+        return res.json();
+      });
   }
 }

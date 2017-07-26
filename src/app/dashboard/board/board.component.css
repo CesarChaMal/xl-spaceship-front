@@ -1,3 +1,9 @@
+.cell {
+  background: #b0c3e3;
+  width: 32px;
+  height: 32px;
+}
+
 .cell:hover {
   background: #e3e3e3;
 }

@@ -37,9 +37,10 @@
   <div class="col-md-6">
     <label for="selfBoard" [ngClass]="{'player-turn': playerTurn(game?.self.user_id)}">{{game?.self.user_id}}</label>
     <button class="btn btn-danger" (click)="onReSalvo()" [disabled]="getRestShots() > 0 || !playerTurn(game?.self.user_id)">Salvo</button>
+    <button class="btn btn-success" (click)="onAutopilot()" [disabled]="!playerTurn(game?.self.user_id)">Autopilot</button>
     <span>Ship count: {{game?.self.shipCount}}</span>
     <span>Rest shots: {{getRestShots()}}</span>
-    <app-board id="selfBoard" [board]="game?.self"></app-board>
+    <app-board id="selfBoard" [board]="game?.self" [disabled]="true"></app-board>
   </div>
   <div class="col-md-6">
     <label for="opponentBoard" [ngClass]="{'player-turn': playerTurn(game?.opponent.user_id)}">{{game?.opponent.user_id}}</label>

@@ -8,7 +8,7 @@ export class AppConstants {
   static PROTOCOL_RESOURCE = '/xl-spaceship/protocol';
 
   static GAME_FIRE_RESOURCE = '/fire';
-  static GAME_AUTOPILOT_RESOURCE = '/game/{gameId}/auto';
+  static GAME_AUTOPILOT_RESOURCE = '/game/';
   static GAME_NEW_RESOURCE = '/game/new';
   static PROTOCOL_CATCH_SALVO_RESOURCE = '/game/';
   static PROTOCOL_GAME_NEW_RESOURCE = '/game/new';
