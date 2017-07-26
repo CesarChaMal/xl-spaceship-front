@@ -1,8 +1,9 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Player} from "../../model/board";
+import {Board} from "../../model/board";
 import {GameService} from "../../service/game.service";
 import {EnumCellType} from "../../model/enum-cell-type.enum";
 import {Coords} from "../../model/coords";
+import {Cell} from "../../model/cell";
 
 @Component({
   selector: 'app-board',
@@ -11,7 +12,7 @@ import {Coords} from "../../model/coords";
 })
 export class BoardComponent implements OnInit {
 
-  @Input() board: Player;
+  @Input() board: Board;
   @Input() disabled: boolean;
 
   EnumCellType: typeof EnumCellType = EnumCellType;
@@ -22,11 +23,11 @@ export class BoardComponent implements OnInit {
   ngOnInit() {
   }
 
-  onPrepSalvo(coords: Coords) {
+  onPrepSalvo(cell: Cell) {
     if (this.disabled) {
       return;
     }
-    this.gameService.prepSalvo(coords);
+    this.gameService.prepSalvo(cell);
   }
 
 }

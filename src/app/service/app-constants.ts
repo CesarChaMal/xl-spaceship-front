@@ -22,4 +22,5 @@ export class AppConstants {
   static SHIP_COUNT = 5;
   static PLAYER_TURN_LS = 'playerturn';
   static GAME_OVER_LS = 'gameover';
+  static CURRENT_RULE_LS = 'currentrule';
 }

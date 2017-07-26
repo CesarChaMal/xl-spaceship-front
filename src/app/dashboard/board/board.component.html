@@ -2,8 +2,14 @@
   <tr *ngFor="let row of board.board; let i = index">
     <td *ngFor="let cell of row; let j = index"
         class="text-center cell"
-        [ngClass]="{ship: cell.type == EnumCellType.SHIP, hit: cell.type == EnumCellType.HIT, miss: cell.type == EnumCellType.MISS}"
-        (click)="onPrepSalvo(cell.coords)"
-    >{{cell.type}}</td>
+        [ngClass]="{
+          marked: cell.marked,
+          ship: cell.type == EnumCellType.SHIP,
+          hit: cell.type == EnumCellType.HIT,
+          miss: cell.type == EnumCellType.MISS
+        }"
+        (click)="onPrepSalvo(cell); cell.marked = true"
+    >{{cell.type}}
+    </td>
   </tr>
 </table>

@@ -4,7 +4,9 @@ import {NgForm} from "@angular/forms";
 import {LocalStorage} from "ngx-webstorage";
 import {AppConstants} from "../service/app-constants";
 import {Game} from "app/model/game";
-import {Player} from "../model/board";
+import {Board} from "../model/board";
+import {Rules} from "../model/rules";
+import {EnumRules} from "../model/enum-rules.enum";
 
 @Component({
   selector: 'app-dashboard',
@@ -25,11 +27,18 @@ export class DashboardComponent implements OnInit {
   @LocalStorage(AppConstants.PLAYER_TURN_LS) player_turn;
   @LocalStorage(AppConstants.OPPONENT_SHIP_COUNT_LS) opponentShipCount;
   @LocalStorage(AppConstants.SELF_SHIP_COUNT_LS) selfShipCount;
+  @LocalStorage(AppConstants.CURRENT_RULE_LS) rule;
+
+  rules = [];
 
   constructor(private gameService: GameService) {
   }
 
   ngOnInit() {
+    if (!this.rule) {
+      this.rule = 'standard';
+    }
+    this.rules.push('standard', 'X-shot', 'super-charge', 'desperation');
     this.updateGame();
   }
 
@@ -52,6 +61,7 @@ export class DashboardComponent implements OnInit {
       .subscribe((game) => {
         game.opponent.shipCount = this.opponentShipCount;
         game.self.shipCount = this.selfShipCount;
+        game.rules = new Rules(this.newGame.rules);
         this.game = game;
       });
   }
@@ -63,7 +73,7 @@ export class DashboardComponent implements OnInit {
       });
   }
 
-  private salvoTo(res, player: Player) {
+  private salvoTo(res, player: Board) {
     if (res.game.player_turn) {
       this.player_turn = res.game.player_turn;
     } else {
@@ -94,7 +104,7 @@ export class DashboardComponent implements OnInit {
   }
 
   getRestShots() {
-    return this.gameService.getRestShots(this.game.self);
+    return this.gameService.getRestShots(this.game);
   }
 
   onAutopilot() {

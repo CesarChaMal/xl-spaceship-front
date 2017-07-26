@@ -3,13 +3,14 @@ import {Http} from "@angular/http";
 import {AppConstants} from "./app-constants";
 import 'rxjs/Rx';
 import {Game} from "../model/game";
-import {Player} from "../model/board";
+import {Board} from "../model/board";
 import {Coords} from "../model/coords";
+import {EnumRules} from "../model/enum-rules.enum";
+import {Cell} from "app/model/cell";
 
 @Injectable()
 export class GameService {
 
-  salvo = [];
 
   constructor(private http: Http) {
   }
@@ -29,33 +30,39 @@ export class GameService {
         if (self == null)
           throw {message: 'Game is not started'};
         let opponent = body.opponent;
-        let selfBoard = new Player(self.user_id, self.board, AppConstants.SHIP_COUNT);
-        let opponentBoard = new Player(opponent.user_id, opponent.board, AppConstants.SHIP_COUNT);
+        let selfBoard = new Board(self.user_id, self.board, AppConstants.SHIP_COUNT, body.rules);
+        let opponentBoard = new Board(opponent.user_id, opponent.board, AppConstants.SHIP_COUNT, body.rules);
         return new Game(body.game.player_turn, selfBoard, opponentBoard);
       })
   }
 
-  prepSalvo(coords: Coords) {
-    if (this.salvo.indexOf(coords.toStr()) == -1) {
-      this.salvo.push(coords.toStr());
+  prepSalvo(cell: Cell) {
+    if (this.salvo.indexOf(cell) == -1) {
+      this.salvo.push(cell);
     }
   }
 
   reSalvo(gameId) {
+    let salvoCoords = this.salvo.map((cell) => {
+      return cell.coords.toStr();
+    });
     return this.http.put(AppConstants.API_HOST
       + AppConstants.USER_RESOURCE
       + AppConstants.GAME_ID_RESOURCE
       + gameId
       + AppConstants.GAME_FIRE_RESOURCE,
-      {salvo: this.salvo})
+      {salvo: salvoCoords})
       .map((res) => {
+        this.salvo.forEach((cell) => {
+          cell.marked = false;
+        });
         this.salvo = [];
         return res.json();
       })
   }
 
-  getRestShots(player: Player) {
-    return player.shipCount - this.salvo.length;
+  getRestShots(game: Game) {
+    return game.rules.getRestShots();
   }
 
   redUpon(gameId: string, salvo) {
