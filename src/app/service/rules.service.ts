@@ -28,7 +28,7 @@ export class RulesService {
    * @param board
    * @returns {number}
    */
-  getRestShots(salvo: [Cell], board: Board) {
-    return this.rules.getRestShots(salvo, board);
+  updateRestShots(salvo: [Cell], board: Board) {
+    return this.rules.updateRestShots(salvo, board);
   }
 }

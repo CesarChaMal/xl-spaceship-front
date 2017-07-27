@@ -8,7 +8,7 @@
           hit: cell.type == EnumCellType.HIT,
           miss: cell.type == EnumCellType.MISS
         }"
-        (click)="onPrepSalvo(cell); cell.marked = true"
+        (click)="onPrepSalvo(cell) ? cell.marked = true : cell.marked = false"
     >{{cell.type}}
     </td>
   </tr>

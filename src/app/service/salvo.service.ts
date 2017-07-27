@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Cell} from "../model/cell";
 import {AppConstants} from "./app-constants";
 import {Http} from "@angular/http";
@@ -8,13 +8,34 @@ import {RulesService} from "./rules.service";
 @Injectable()
 export class SalvoService {
   salvo = [];
+  selfBoard: Board;
+  opponentBoard: Board;
 
-  constructor(private rulesService: RulesService, private http: Http) { }
+  constructor(private selfRulesService: RulesService,
+              private opponentRulesService: RulesService,
+              private http: Http) {
+  }
+
+  useSelfBoard(board: Board) {
+    this.selfBoard = board;
+    this.updateRestShots();
+  }
+
+  useOpponentBoard(board: Board) {
+    this.opponentBoard = board;
+    this.opponentRulesService.updateRestShots(null, this.opponentBoard);
+  }
 
   prepSalvo(cell: Cell) {
+    if (this.selfRulesService.rules.restShots <= 0) {
+      return false;
+    }
     if (this.salvo.indexOf(cell) == -1) {
       this.salvo.push(cell);
+      this.updateRestShots();
+      return true;
     }
+    return false;
   }
 
   /**
@@ -36,6 +57,7 @@ export class SalvoService {
         this.salvo.forEach((cell) => {
           cell.marked = false;
         });
+        this.opponentRulesService.updateRestShots(null, this.opponentBoard);
         this.salvo = [];
         return res.json();
       })
@@ -44,12 +66,11 @@ export class SalvoService {
   /**
    * Opponent's salvo
    * @param {string} gameId
-   * @param opponentShipCount
    * @returns {Observable<any | Promise<any>>}
    */
-  redUpon(gameId: string, opponentShipCount: number) {
+  redUpon(gameId: string) {
     let salvo = [];
-    for (let i = 0; i < opponentShipCount; i++) {
+    for (let i = 0; i < this.opponentRulesService.rules.restShots; i++) {
       let x = Math.random().toString(16).substr(2, 1);
       let y = Math.random().toString(16).substr(2, 1);
       salvo.push(`${y}x${x}`);
@@ -65,7 +86,8 @@ export class SalvoService {
       })
   }
 
-  getRestSalvo(board: Board) {
-    return this.rulesService.getRestShots(<[Cell]>this.salvo, board);
+  updateRestShots() {
+    this.selfRulesService.updateRestShots(<[Cell]>this.salvo, this.selfBoard);
   }
+
 }

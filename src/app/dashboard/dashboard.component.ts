@@ -61,7 +61,7 @@ export class DashboardComponent implements OnInit {
 
 
   onRedUpon() {
-    this.salvoService.redUpon(this.dashboardService.gameId, this.rulesService.getRestShots(null, this.game.opponent))
+    this.salvoService.redUpon(this.dashboardService.gameId)
       .subscribe((res) => {
         this.dashboardService.salvoTo(res, false);
       });
@@ -72,10 +72,7 @@ export class DashboardComponent implements OnInit {
   }
 
   getRestShots() {
-    if (!this.game) {
-      return 0;
-    }
-    return this.salvoService.getRestSalvo(this.game.self);
+    return this.rulesService.rules.restShots;
   }
 
   onAutopilot() {

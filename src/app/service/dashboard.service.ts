@@ -5,6 +5,7 @@ import {Game} from "../model/game";
 import {NewGameRequest} from "../model/new-game-request";
 import {GameService} from "./game.service";
 import {RulesService} from "./rules.service";
+import {SalvoService} from "./salvo.service";
 
 @Injectable()
 export class DashboardService {
@@ -15,7 +16,7 @@ export class DashboardService {
   @LocalStorage(AppConstants.PLAYER_TURN_LS) player_turn;
   @LocalStorage(AppConstants.GAME_OVER_LS) gameOver: boolean;
 
-  constructor(private gameService: GameService, private rulesService: RulesService) { }
+  constructor(private gameService: GameService, private salvoService: SalvoService, private rulesService: RulesService) { }
 
   startNewGame(game: NewGameRequest) {
     this.opponentShipCount = this.selfShipCount = AppConstants.SHIP_COUNT;
@@ -34,6 +35,10 @@ export class DashboardService {
       .subscribe((game) => {
         game.self.shipCount = this.selfShipCount;
         game.opponent.shipCount = this.opponentShipCount;
+        game.self.opponentShipCount = game.opponent.shipCount;
+        game.opponent.opponentShipCount = game.self.shipCount;
+        this.salvoService.useSelfBoard(game.self);
+        this.salvoService.useOpponentBoard(game.opponent);
         this.game = game;
       });
   }

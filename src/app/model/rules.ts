@@ -6,6 +6,7 @@ import {Cell} from "./cell";
 export class Rules {
   rules: EnumRules;
   xShotCount: number;
+  restShots: number;
 
   constructor(rules: string) {
     if (!rules) {
@@ -31,16 +32,18 @@ export class Rules {
     }
   }
 
-  getRestShots(salvo: [Cell], player: Board) {
+  updateRestShots(salvo: [Cell], player: Board) {
     let salvoLength = salvo != null ? salvo.length : 0;
     switch (this.rules) {
       case EnumRules.STANDARD:
-        return player.shipCount - salvoLength;
+        this.restShots = player.shipCount - salvoLength;
+        break;
       case EnumRules.X_SHOT:
-        return this.xShotCount - salvoLength;
+        this.restShots = this.xShotCount - salvoLength;
+        break;
       case EnumRules.DESPERATION:
-        return AppConstants.SHIP_COUNT - player.opponentShipCount + 1 - salvoLength;
+        this.restShots = AppConstants.SHIP_COUNT - player.opponentShipCount + 1 - salvoLength;
+        break;
     }
   }
-
 }

@@ -26,9 +26,9 @@ export class BoardComponent implements OnInit {
 
   onPrepSalvo(cell: Cell) {
     if (this.disabled) {
-      return;
+      return false;
     }
-    this.salvoService.prepSalvo(cell);
+    return this.salvoService.prepSalvo(cell);
   }
 
 }

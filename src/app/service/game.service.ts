@@ -4,7 +4,6 @@ import {AppConstants} from "./app-constants";
 import 'rxjs/Rx';
 import {Game} from "../model/game";
 import {Board} from "../model/board";
-import {Rules} from "../model/rules";
 
 @Injectable()
 export class GameService {
@@ -32,12 +31,6 @@ export class GameService {
         return new Game(body.game.player_turn, selfBoard, opponentBoard);
       })
   }
-
-
-
-  // getRestShots(game: Game) {
-  //   return game.rules.getRestShots();
-  // }
 
   autopilot(gameId: string) {
     return this.http

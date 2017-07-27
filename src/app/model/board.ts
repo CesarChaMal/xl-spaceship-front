@@ -6,7 +6,6 @@ export class Board {
   user_id: string;
   board: Cell[][];
   shipCount:number;
-  xShotCount: number;
   opponentShipCount: number;
 
   constructor(userId: string, board: [string], shipCount: number) {
