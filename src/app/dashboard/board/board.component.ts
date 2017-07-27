@@ -4,6 +4,7 @@ import {GameService} from "../../service/game.service";
 import {EnumCellType} from "../../model/enum-cell-type.enum";
 import {Coords} from "../../model/coords";
 import {Cell} from "../../model/cell";
+import {SalvoService} from "../../service/salvo.service";
 
 @Component({
   selector: 'app-board',
@@ -17,7 +18,7 @@ export class BoardComponent implements OnInit {
 
   EnumCellType: typeof EnumCellType = EnumCellType;
 
-  constructor(private gameService: GameService) {
+  constructor(private salvoService: SalvoService) {
   }
 
   ngOnInit() {
@@ -27,7 +28,7 @@ export class BoardComponent implements OnInit {
     if (this.disabled) {
       return;
     }
-    this.gameService.prepSalvo(cell);
+    this.salvoService.prepSalvo(cell);
   }
 
 }

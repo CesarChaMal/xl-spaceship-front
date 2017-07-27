@@ -4,13 +4,10 @@ import {AppConstants} from "./app-constants";
 import 'rxjs/Rx';
 import {Game} from "../model/game";
 import {Board} from "../model/board";
-import {Coords} from "../model/coords";
-import {EnumRules} from "../model/enum-rules.enum";
-import {Cell} from "app/model/cell";
+import {Rules} from "../model/rules";
 
 @Injectable()
 export class GameService {
-
 
   constructor(private http: Http) {
   }
@@ -30,52 +27,17 @@ export class GameService {
         if (self == null)
           throw {message: 'Game is not started'};
         let opponent = body.opponent;
-        let selfBoard = new Board(self.user_id, self.board, AppConstants.SHIP_COUNT, body.rules);
-        let opponentBoard = new Board(opponent.user_id, opponent.board, AppConstants.SHIP_COUNT, body.rules);
+        let selfBoard = new Board(self.user_id, self.board, AppConstants.SHIP_COUNT);
+        let opponentBoard = new Board(opponent.user_id, opponent.board, AppConstants.SHIP_COUNT);
         return new Game(body.game.player_turn, selfBoard, opponentBoard);
       })
   }
 
-  prepSalvo(cell: Cell) {
-    if (this.salvo.indexOf(cell) == -1) {
-      this.salvo.push(cell);
-    }
-  }
 
-  reSalvo(gameId) {
-    let salvoCoords = this.salvo.map((cell) => {
-      return cell.coords.toStr();
-    });
-    return this.http.put(AppConstants.API_HOST
-      + AppConstants.USER_RESOURCE
-      + AppConstants.GAME_ID_RESOURCE
-      + gameId
-      + AppConstants.GAME_FIRE_RESOURCE,
-      {salvo: salvoCoords})
-      .map((res) => {
-        this.salvo.forEach((cell) => {
-          cell.marked = false;
-        });
-        this.salvo = [];
-        return res.json();
-      })
-  }
 
-  getRestShots(game: Game) {
-    return game.rules.getRestShots();
-  }
-
-  redUpon(gameId: string, salvo) {
-    return this.http
-      .put(AppConstants.API_HOST
-        + AppConstants.PROTOCOL_RESOURCE
-        + AppConstants.PROTOCOL_CATCH_SALVO_RESOURCE
-        + gameId,
-        {salvo: salvo})
-      .map((res) => {
-        return res.json();
-      })
-  }
+  // getRestShots(game: Game) {
+  //   return game.rules.getRestShots();
+  // }
 
   autopilot(gameId: string) {
     return this.http

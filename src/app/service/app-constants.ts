@@ -23,4 +23,6 @@ export class AppConstants {
   static PLAYER_TURN_LS = 'playerturn';
   static GAME_OVER_LS = 'gameover';
   static CURRENT_RULE_LS = 'currentrule';
+  static RULES_LS = 'rules';
+  static X_SHOT_LS = 'xshot';
 }

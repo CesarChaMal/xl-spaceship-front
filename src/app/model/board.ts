@@ -1,20 +1,16 @@
 import {Cell} from "./cell";
-import {AppConstants} from "../service/app-constants";
 import {Coords} from "./coords";
 import {EnumCellType} from "./enum-cell-type.enum";
-import {EnumRules} from "./enum-rules.enum";
 
 export class Board {
-  rules: EnumRules;
   user_id: string;
   board: Cell[][];
   shipCount:number;
   xShotCount: number;
   opponentShipCount: number;
 
-  constructor(user_id: string, board: [string], shipCount: number, rules: EnumRules) {
-    this.rules = rules;
-    this.user_id = user_id;
+  constructor(userId: string, board: [string], shipCount: number) {
+    this.user_id = userId;
     this.board = [];
     this.shipCount = shipCount;
     for (let i = 0; i < board.length; i++) {

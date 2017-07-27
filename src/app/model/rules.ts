@@ -8,20 +8,38 @@ export class Rules {
   xShotCount: number;
 
   constructor(rules: string) {
-    this.rules = EnumRules[rules];
-    if (this.rules == EnumRules.X_SHOT) {
+    if (!rules) {
+      rules = 'standard';
+    }
+    console.log('create rules');
+    console.log(rules);
+    if (rules.indexOf('shot') >= 0) {
       this.xShotCount = +rules.split('-')[0];
+      this.rules = EnumRules.X_SHOT;
+    } else {
+      switch (rules) {
+        case 'standard':
+          this.rules = EnumRules.STANDARD;
+          break;
+        case 'super-charge':
+          this.rules = EnumRules.SUPER_CHARGE;
+          break;
+        case 'desperation':
+          this.rules = EnumRules.DESPERATION;
+          break;
+      }
     }
   }
 
-  getRestShots(salvo: [Cell]) {
+  getRestShots(salvo: [Cell], player: Board) {
+    let salvoLength = salvo != null ? salvo.length : 0;
     switch (this.rules) {
       case EnumRules.STANDARD:
-        return player.shipCount - salvo.length;
+        return player.shipCount - salvoLength;
       case EnumRules.X_SHOT:
-        return this.xShotCount - salvo.length;
+        return this.xShotCount - salvoLength;
       case EnumRules.DESPERATION:
-        return AppConstants.SHIP_COUNT - player.opponentShipCount + 1 - salvo.length;
+        return AppConstants.SHIP_COUNT - player.opponentShipCount + 1 - salvoLength;
     }
   }
 

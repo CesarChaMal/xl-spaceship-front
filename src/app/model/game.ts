@@ -5,7 +5,6 @@ export class Game {
   game: { player_turn: string };
   opponent: Board;
   self: Board;
-  rules: Rules;
 
   constructor(game: { player_turn: string }, self: Board, opponent: Board) {
     this.game = game;

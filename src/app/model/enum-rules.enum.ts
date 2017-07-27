@@ -1,6 +1,6 @@
 export enum EnumRules {
-  STANDARD,
-  X_SHOT,
-  SUPER_CHARGE,
-  DESPERATION
+  STANDARD = 'standard',
+  X_SHOT = 'shot',
+  SUPER_CHARGE = 'super-charge',
+  DESPERATION = 'desperation'
 }

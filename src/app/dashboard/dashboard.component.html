@@ -15,7 +15,8 @@
       </select>
     </div>
     <div class="form-group" [hidden]="rule != 'X-shot'">
-      <input class="form-control" type="number" min="1" max="10" placeholder="Type count of shots (1-10)">
+      <input [(ngModel)]="xShot" name="xShot" class="form-control" type="number" min="1" max="10" placeholder="Type count of shots (1-10)">
+      <div class="form-control" *ngIf="xShotNotInRange">Count of shots must be between 1 and 10</div>
     </div>
     <button class="btn btn-primary">Submit</button>
   </form>
@@ -47,14 +48,14 @@
     <label for="selfBoard" [ngClass]="{'player-turn': playerTurn(game?.self.user_id)}">{{game?.self.user_id}}</label>
     <button class="btn btn-danger" (click)="onReSalvo()" [disabled]="getRestShots() > 0 || !playerTurn(game?.self.user_id)">Salvo</button>
     <button class="btn btn-success" (click)="onAutopilot()" [disabled]="!playerTurn(game?.self.user_id)">Autopilot</button>
-    <span>Ship count: {{game?.self.shipCount}}</span>
+    <span>Ship count: {{game != null ? game.self.shipCount : 0}}</span>
     <span>Rest shots: {{getRestShots()}}</span>
     <app-board id="selfBoard" [board]="game?.self" [disabled]="true"></app-board>
   </div>
   <div class="col-md-6">
     <label for="opponentBoard" [ngClass]="{'player-turn': playerTurn(game?.opponent.user_id)}">{{game?.opponent.user_id}}</label>
     <button class="btn btn-danger" (click)="onRedUpon()" [disabled]="!playerTurn(game?.opponent.user_id)">Red upon</button>
-    <span>Ship count: {{game?.opponent.shipCount}}</span>
+    <span>Ship count: {{game != null ? game.opponent.shipCount : 0}}</span>
     <app-board id="opponentBoard" [board]="game?.opponent" [disabled]="getRestShots() <= 0 || !playerTurn(game?.self.user_id)"></app-board>
   </div>
 </div>

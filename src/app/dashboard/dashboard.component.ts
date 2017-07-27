@@ -3,10 +3,9 @@ import {GameService} from "../service/game.service";
 import {NgForm} from "@angular/forms";
 import {LocalStorage} from "ngx-webstorage";
 import {AppConstants} from "../service/app-constants";
-import {Game} from "app/model/game";
-import {Board} from "../model/board";
-import {Rules} from "../model/rules";
-import {EnumRules} from "../model/enum-rules.enum";
+import {SalvoService} from "../service/salvo.service";
+import {DashboardService} from "../service/dashboard.service";
+import {RulesService} from "../service/rules.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -15,23 +14,15 @@ import {EnumRules} from "../model/enum-rules.enum";
 })
 export class DashboardComponent implements OnInit {
 
-  @LocalStorage(AppConstants.GAME_OVER_LS) gameOver: boolean;
-  @LocalStorage(AppConstants.NEW_GAME_LS) newGame: {
-    full_name: string;
-    user_id: string;
-    rules: string;
-    starting: string;
-    game_id: string
-  };
-  @LocalStorage(AppConstants.GAME_LS) game: Game;
-  @LocalStorage(AppConstants.PLAYER_TURN_LS) player_turn;
-  @LocalStorage(AppConstants.OPPONENT_SHIP_COUNT_LS) opponentShipCount;
-  @LocalStorage(AppConstants.SELF_SHIP_COUNT_LS) selfShipCount;
   @LocalStorage(AppConstants.CURRENT_RULE_LS) rule;
-
+  @LocalStorage(AppConstants.X_SHOT_LS) xShot: number;
+  xShotNotInRange: boolean = false;
   rules = [];
 
-  constructor(private gameService: GameService) {
+  constructor(private dashboardService: DashboardService,
+              private gameService: GameService,
+              private rulesService: RulesService,
+              private salvoService: SalvoService) {
   }
 
   ngOnInit() {
@@ -39,78 +30,62 @@ export class DashboardComponent implements OnInit {
       this.rule = 'standard';
     }
     this.rules.push('standard', 'X-shot', 'super-charge', 'desperation');
-    this.updateGame();
+    this.dashboardService.updateGame();
   }
 
   onNewGame(form: NgForm) {
-    this.gameService.newGame(form.form.value)
+    let request = form.form.value;
+    if (this.rule.indexOf('shot') >= 0) {
+      if (this.xShot >= 1 && this.xShot <= 10){
+        this.rule = this.xShot + '-shot';
+        this.xShotNotInRange = false;
+      } else {
+        this.xShotNotInRange = true;
+        return;
+      }
+    }
+    request.rules = this.rule;
+    this.gameService.newGame(request)
       .subscribe((game) => {
-        this.opponentShipCount = this.selfShipCount = AppConstants.SHIP_COUNT;
-        this.newGame = game;
-        this.player_turn = game.starting;
-        this.gameOver = false;
-        this.updateGame();
+        this.dashboardService.startNewGame(game);
       });
   }
 
-  updateGame() {
-    if (!this.newGame) {
-      return;
-    }
-    this.gameService.getGameStatus(this.newGame.game_id)
-      .subscribe((game) => {
-        game.opponent.shipCount = this.opponentShipCount;
-        game.self.shipCount = this.selfShipCount;
-        game.rules = new Rules(this.newGame.rules);
-        this.game = game;
-      });
-  }
 
   onReSalvo() {
-    this.gameService.reSalvo(this.newGame.game_id)
+    this.salvoService.reSalvo(this.dashboardService.gameId)
       .subscribe((res) => {
-        this.salvoTo(res, this.game.opponent);
+        this.dashboardService.salvoTo(res, true);
       });
   }
 
-  private salvoTo(res, player: Board) {
-    if (res.game.player_turn) {
-      this.player_turn = res.game.player_turn;
-    } else {
-      this.player_turn = res.game.won;
-      this.gameOver = true;
-    }
-    this.opponentShipCount = player.markSalvo(res.salvo);
-  }
 
   onRedUpon() {
-    let salvo = [];
-    for (let i = 0; i < this.opponentShipCount; i++) {
-      let x = Math.random().toString(16).substr(2, 1);
-      let y = Math.random().toString(16).substr(2, 1);
-      salvo.push(`${y}x${x}`);
-    }
-    this.gameService.redUpon(this.newGame.game_id, salvo)
+    this.salvoService.redUpon(this.dashboardService.gameId, this.rulesService.getRestShots(null, this.game.opponent))
       .subscribe((res) => {
-        this.salvoTo(res, this.game.self);
+        this.dashboardService.salvoTo(res, false);
       });
   }
 
   playerTurn(user_id) {
-    if (!this.player_turn) {
-      return false;
-    }
-    return this.player_turn === user_id;
+    return this.dashboardService.playerTurn(user_id);
   }
 
   getRestShots() {
-    return this.gameService.getRestShots(this.game);
+    if (!this.game) {
+      return 0;
+    }
+    return this.salvoService.getRestSalvo(this.game.self);
   }
 
   onAutopilot() {
-    this.gameService.autopilot(this.newGame.game_id)
+    this.gameService.autopilot(this.dashboardService.gameId)
       .subscribe((res) => {
-        this.salvoTo(res, this.game.opponent);
+        this.dashboardService.salvoTo(res, true);
       })
+  }
+
+  get game() {
+    return this.dashboardService.game;
   }
 }

@@ -8,6 +8,9 @@ import {FormsModule} from "@angular/forms";
 import {GameService} from "./service/game.service";
 import {HttpModule} from "@angular/http";
 import {Ng2Webstorage} from "ngx-webstorage";
+import {DashboardService} from "./service/dashboard.service";
+import {SalvoService} from "./service/salvo.service";
+import {RulesService} from "./service/rules.service";
 
 @NgModule({
   declarations: [
@@ -22,7 +25,7 @@ import {Ng2Webstorage} from "ngx-webstorage";
     Ng2Webstorage,
     Ng2Webstorage.forRoot({prefix: 'xl', separator: '.', caseSensitive: true}),
   ],
-  providers: [GameService],
+  providers: [DashboardService, GameService, RulesService, SalvoService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
