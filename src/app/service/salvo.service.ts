@@ -1,29 +1,31 @@
-import {Injectable} from '@angular/core';
+import {Injectable, ReflectiveInjector} from '@angular/core';
 import {Cell} from "../model/cell";
 import {AppConstants} from "./app-constants";
 import {Http} from "@angular/http";
 import {Board} from "../model/board";
+import {
+  BoardToken, rulesServiceFactory, rulesServiceProvider, RulesServiceToken,
+  RulesToken
+} from "./rules-service.provider";
 import {RulesService} from "./rules.service";
 
 @Injectable()
 export class SalvoService {
   salvo = [];
-  selfBoard: Board;
-  opponentBoard: Board;
+  private selfRulesService;
+  private opponentRulesService;
 
-  constructor(private selfRulesService: RulesService,
-              private opponentRulesService: RulesService,
-              private http: Http) {
+  constructor(private http: Http) {
   }
 
-  useSelfBoard(board: Board) {
-    this.selfBoard = board;
+  useSelfBoard(rules: string, board: Board) {
+    this.selfRulesService = new RulesService(rules, board);
     this.updateRestShots();
   }
 
-  useOpponentBoard(board: Board) {
-    this.opponentBoard = board;
-    this.opponentRulesService.updateRestShots(null, this.opponentBoard);
+  useOpponentBoard(rules: string, board: Board) {
+    this.opponentRulesService = new RulesService(rules, board);
+    this.opponentRulesService.updateRestShots(null);
   }
 
   prepSalvo(cell: Cell) {
@@ -43,7 +45,7 @@ export class SalvoService {
    * @param gameId
    * @returns {Observable<any | Promise<any>>}
    */
-  reSalvo(gameId) {
+  playerSalvo(gameId) {
     let salvoCoords = this.salvo.map((cell) => {
       return cell.coords.toStr();
     });
@@ -57,7 +59,7 @@ export class SalvoService {
         this.salvo.forEach((cell) => {
           cell.marked = false;
         });
-        this.opponentRulesService.updateRestShots(null, this.opponentBoard);
+        this.opponentRulesService.updateRestShots(null);
         this.salvo = [];
         return res.json();
       })
@@ -68,7 +70,7 @@ export class SalvoService {
    * @param {string} gameId
    * @returns {Observable<any | Promise<any>>}
    */
-  redUpon(gameId: string) {
+  opponentSalvo(gameId: string) {
     let salvo = [];
     for (let i = 0; i < this.opponentRulesService.rules.restShots; i++) {
       let x = Math.random().toString(16).substr(2, 1);
@@ -87,7 +89,17 @@ export class SalvoService {
   }
 
   updateRestShots() {
-    this.selfRulesService.updateRestShots(<[Cell]>this.salvo, this.selfBoard);
+    this.selfRulesService.updateRestShots(<[Cell]>this.salvo);
+  }
+
+  updateOpponentRestShots() {
+    this.opponentRulesService.updateRestShots(null);
+  }
+
+  get selfRestShots() {
+    if (this.selfRulesService) {
+      return this.selfRulesService.rules.restShots;
+    }
   }
 
 }

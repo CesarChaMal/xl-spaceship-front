@@ -4,7 +4,6 @@ import {AppConstants} from "./app-constants";
 import {Game} from "../model/game";
 import {NewGameRequest} from "../model/new-game-request";
 import {GameService} from "./game.service";
-import {RulesService} from "./rules.service";
 import {SalvoService} from "./salvo.service";
 
 @Injectable()
@@ -16,14 +15,13 @@ export class DashboardService {
   @LocalStorage(AppConstants.PLAYER_TURN_LS) player_turn;
   @LocalStorage(AppConstants.GAME_OVER_LS) gameOver: boolean;
 
-  constructor(private gameService: GameService, private salvoService: SalvoService, private rulesService: RulesService) { }
+  constructor(private gameService: GameService, private salvoService: SalvoService) { }
 
   startNewGame(game: NewGameRequest) {
     this.opponentShipCount = this.selfShipCount = AppConstants.SHIP_COUNT;
     this.newGame = game;
     this.player_turn = game.starting;
     this.gameOver = false;
-    this.rulesService.useRules(game.rules);
     this.updateGame();
   }
 
@@ -37,8 +35,8 @@ export class DashboardService {
         game.opponent.shipCount = this.opponentShipCount;
         game.self.opponentShipCount = game.opponent.shipCount;
         game.opponent.opponentShipCount = game.self.shipCount;
-        this.salvoService.useSelfBoard(game.self);
-        this.salvoService.useOpponentBoard(game.opponent);
+        this.salvoService.useSelfBoard(this.newGame.rules, game.self);
+        this.salvoService.useOpponentBoard(this.newGame.rules, game.opponent);
         this.game = game;
       });
   }
@@ -54,7 +52,13 @@ export class DashboardService {
       this.player_turn = res.game.won;
       this.gameOver = true;
     }
-    this.opponentShipCount = this.game[opponent ? 'opponent' : 'self'].markSalvo(res.salvo);
+    let opponentBoard = this.game[opponent ? 'opponent' : 'self'];
+    let selfBoard = this.game[!opponent ? 'opponent' : 'self'];
+    this.opponentShipCount = opponentBoard.markSalvo(res.salvo);
+    opponentBoard.opponentShipCount = selfBoard.shipCount;
+    selfBoard.opponentShipCount = opponentBoard.shipCount;
+    this.salvoService.updateOpponentRestShots();
+    this.salvoService.updateRestShots();
   }
 
   playerTurn(user_id) {

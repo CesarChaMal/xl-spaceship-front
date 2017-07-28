@@ -21,7 +21,6 @@ export class DashboardComponent implements OnInit {
 
   constructor(private dashboardService: DashboardService,
               private gameService: GameService,
-              private rulesService: RulesService,
               private salvoService: SalvoService) {
   }
 
@@ -53,7 +52,7 @@ export class DashboardComponent implements OnInit {
 
 
   onReSalvo() {
-    this.salvoService.reSalvo(this.dashboardService.gameId)
+    this.salvoService.playerSalvo(this.dashboardService.gameId)
       .subscribe((res) => {
         this.dashboardService.salvoTo(res, true);
       });
@@ -61,7 +60,7 @@ export class DashboardComponent implements OnInit {
 
 
   onRedUpon() {
-    this.salvoService.redUpon(this.dashboardService.gameId)
+    this.salvoService.opponentSalvo(this.dashboardService.gameId)
       .subscribe((res) => {
         this.dashboardService.salvoTo(res, false);
       });
@@ -72,7 +71,7 @@ export class DashboardComponent implements OnInit {
   }
 
   getRestShots() {
-    return this.rulesService.rules.restShots;
+    return this.salvoService.selfRestShots;
   }
 
   onAutopilot() {
@@ -85,4 +84,13 @@ export class DashboardComponent implements OnInit {
   get game() {
     return this.dashboardService.game;
   }
+
+  get gameOver() {
+    return this.dashboardService.gameOver;
+  }
+
+  get player_turn() {
+    return this.dashboardService.player_turn;
+  }
+
 }
