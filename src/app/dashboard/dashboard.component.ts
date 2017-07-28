@@ -93,4 +93,7 @@ export class DashboardComponent implements OnInit {
     return this.dashboardService.player_turn;
   }
 
+  get newGame() {
+    return this.dashboardService.newGame;
+  }
 }
