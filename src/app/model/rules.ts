@@ -12,8 +12,6 @@ export class Rules {
     if (!rules) {
       rules = 'standard';
     }
-    console.log('create rules');
-    console.log(rules);
     if (rules.indexOf('shot') >= 0) {
       this.xShotCount = +rules.split('-')[0];
       this.rules = EnumRules.X_SHOT;
@@ -42,7 +40,10 @@ export class Rules {
         this.restShots = this.xShotCount - salvoLength;
         break;
       case EnumRules.DESPERATION:
-        this.restShots = AppConstants.SHIP_COUNT - player.opponentShipCount + 1 - salvoLength;
+        this.restShots = AppConstants.SHIP_COUNT - player.opponent.shipCount + 1 - salvoLength;
+        break;
+      case EnumRules.SUPER_CHARGE:
+        this.restShots = (player.awarded ? player.shipCount : 0) + player.shipCount - salvoLength;
         break;
     }
   }

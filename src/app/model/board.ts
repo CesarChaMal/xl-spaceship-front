@@ -6,7 +6,8 @@ export class Board {
   user_id: string;
   board: Cell[][];
   shipCount:number;
-  opponentShipCount: number;
+  awarded: boolean;
+  opponent: Board;
 
   constructor(userId: string, board: [string], shipCount: number) {
     this.user_id = userId;
@@ -40,6 +41,7 @@ export class Board {
   }
 
   markSalvo(res: { [key: string]: string }) {
+    this.opponent.awarded = false;
     this.board.forEach((row)=>{
       row.forEach((cell) => {
         let cellHexCoords = cell.coords.toStr();
@@ -55,6 +57,7 @@ export class Board {
               cell.type = EnumCellType.MISS;
               break;
             case 'kill':
+              this.opponent.awarded = true;
               cell.type = EnumCellType.HIT;
               this.shipCount--;
               break;

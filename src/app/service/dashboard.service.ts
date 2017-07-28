@@ -8,8 +8,8 @@ import {SalvoService} from "./salvo.service";
 
 @Injectable()
 export class DashboardService {
-  @LocalStorage(AppConstants.NEW_GAME_LS) newGame: NewGameRequest;
-  @LocalStorage(AppConstants.GAME_LS) game: Game;
+  newGame: NewGameRequest;
+  game: Game;
   @LocalStorage(AppConstants.OPPONENT_SHIP_COUNT_LS) opponentShipCount;
   @LocalStorage(AppConstants.SELF_SHIP_COUNT_LS) selfShipCount;
   @LocalStorage(AppConstants.PLAYER_TURN_LS) player_turn;
@@ -33,8 +33,8 @@ export class DashboardService {
       .subscribe((game) => {
         game.self.shipCount = this.selfShipCount;
         game.opponent.shipCount = this.opponentShipCount;
-        game.self.opponentShipCount = game.opponent.shipCount;
-        game.opponent.opponentShipCount = game.self.shipCount;
+        game.self.opponent = game.opponent;
+        game.opponent.opponent = game.self;
         this.salvoService.useSelfBoard(this.newGame.rules, game.self);
         this.salvoService.useOpponentBoard(this.newGame.rules, game.opponent);
         this.game = game;
@@ -55,8 +55,8 @@ export class DashboardService {
     let opponentBoard = this.game[opponent ? 'opponent' : 'self'];
     let selfBoard = this.game[!opponent ? 'opponent' : 'self'];
     this.opponentShipCount = opponentBoard.markSalvo(res.salvo);
-    opponentBoard.opponentShipCount = selfBoard.shipCount;
-    selfBoard.opponentShipCount = opponentBoard.shipCount;
+    opponentBoard.opponent = selfBoard;
+    selfBoard.opponent = opponentBoard;
     this.salvoService.updateOpponentRestShots();
     this.salvoService.updateRestShots();
   }
