@@ -47,4 +47,5 @@ export class Rules {
         break;
     }
   }
+
 }
