@@ -11,7 +11,6 @@ import {Ng2Webstorage} from "ngx-webstorage";
 import {DashboardService} from "./service/dashboard.service";
 import {SalvoService} from "./service/salvo.service";
 import {RulesService} from "./service/rules.service";
-import {rulesServiceFactory, rulesServiceProvider} from "./service/rules-service.provider";
 
 @NgModule({
   declarations: [

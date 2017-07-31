@@ -3,10 +3,6 @@ import {Cell} from "../model/cell";
 import {AppConstants} from "./app-constants";
 import {Http} from "@angular/http";
 import {Board} from "../model/board";
-import {
-  BoardToken, rulesServiceFactory, rulesServiceProvider, RulesServiceToken,
-  RulesToken
-} from "./rules-service.provider";
 import {RulesService} from "./rules.service";
 
 @Injectable()
